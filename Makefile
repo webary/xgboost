@@ -43,8 +43,8 @@ endif
 # it is useful for pip install compiling-on-the-fly
 OS := $(shell uname)
 ifeq ($(OS), Darwin)
-export CC = $(if $(shell which gcc-6),gcc-6,clang)
-export CXX = $(if $(shell which g++-6),g++-6,clang++)
+export CC = $(if $(shell which gcc-6),gcc-6,$(if $(shell which gcc-mp-6), gcc-mp-6, clang))
+export CXX = $(if $(shell which g++-6),g++-6,$(if $(shell which g++-mp-6),g++-mp-6, clang++))
 endif
 
 export LDFLAGS= -pthread -lm $(ADD_LDFLAGS) $(DMLC_LDFLAGS) $(PLUGIN_LDFLAGS)
@@ -62,6 +62,7 @@ ifneq ($(UNAME), Windows)
 	XGBOOST_DYLIB = lib/libxgboost.so
 else
 	XGBOOST_DYLIB = lib/libxgboost.dll
+	JAVAINCFLAGS += -I${JAVA_HOME}/include/win32
 endif
 
 ifeq ($(UNAME), Linux)
@@ -104,16 +105,16 @@ CLI_OBJ = build/cli_main.o
 build/%.o: src/%.cc
 	@mkdir -p $(@D)
 	$(CXX) $(CFLAGS) -MM -MT build/$*.o $< >build/$*.d
-	$(CXX) -c $(CFLAGS) -c $< -o $@
+	$(CXX) -c $(CFLAGS) $< -o $@
 
 build_plugin/%.o: plugin/%.cc
 	@mkdir -p $(@D)
 	$(CXX) $(CFLAGS) -MM -MT build_plugin/$*.o $< >build_plugin/$*.d
-	$(CXX) -c $(CFLAGS) -c $< -o $@
+	$(CXX) -c $(CFLAGS) $< -o $@
 
 # The should be equivalent to $(ALL_OBJ)  except for build/cli_main.o
 amalgamation/xgboost-all0.o: amalgamation/xgboost-all0.cc
-	$(CXX) -c $(CFLAGS) -c $< -o $@
+	$(CXX) -c $(CFLAGS) $< -o $@
 
 # Equivalent to lib/libxgboost_all.so
 lib/libxgboost_all.so: $(AMALGA_OBJ) $(LIB_DEP)
@@ -148,8 +149,8 @@ clean:
 	$(RM) -rf build build_plugin lib bin *~ */*~ */*/*~ */*/*/*~ */*.o */*/*.o */*/*/*.o xgboost
 
 clean_all: clean
-	cd $(DMLC_CORE); $(MAKE) clean; cd $(ROODIR)
-	cd $(RABIT); $(MAKE) clean; cd $(ROODIR)
+	cd $(DMLC_CORE); $(MAKE) clean; cd $(ROOTDIR)
+	cd $(RABIT); $(MAKE) clean; cd $(ROOTDIR)
 
 doxygen:
 	doxygen doc/Doxyfile

@@ -14,9 +14,14 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <maven.version>3.3.9</maven.version>
-        <scala.version>2.10.5</scala.version>
-        <scala.binary.version>2.10</scala.binary.version>
     </properties>
+    <repositories>
+        <repository>
+            <id>apache_maven</id>
+            <name>apache maven</name>
+            <url>http://repo.maven.apache.org/maven2</url>
+        </repository>
+    </repositories>
     <modules>
         <module>xgboost4j</module>
         <module>xgboost4j-example</module>
@@ -25,13 +30,15 @@
     </modules>
     <profiles>
         <profile>
-            <id>spark-1.x</id>
+            <id>spark-2.x</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <spark.version>1.6.1</spark.version>
-                <scala.binary.version>2.10</scala.binary.version>
+                <spark.version>2.0.1</spark.version>
+                <flink.suffix>_2.11</flink.suffix>
+                <scala.version>2.11.8</scala.version>
+                <scala.binary.version>2.11</scala.binary.version>
             </properties>
         </profile>
     </profiles>
